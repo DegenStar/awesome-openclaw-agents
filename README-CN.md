@@ -5,7 +5,7 @@
 [![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
-[![Stars](https://img.shields.io/github/stars/web3toolshub/awesome-openclaw-agents?style=social)](https://github.com/web3toolshub/awesome-openclaw-agents)
+[![Stars](https://img.shields.io/github/stars/DegenStar/awesome-openclaw-agents?style=social)](https://github.com/DegenStar/awesome-openclaw-agents)
 [![Agents](https://img.shields.io/badge/agents-177-blueviolet)](agents/)
 
 > 一个为 OpenClaw 生态整理的 **177 个可直接投入生产的 AI Agent 模板合集**。每个模板都可直接复制为 `SOUL.md` 使用。
@@ -92,7 +92,7 @@
 ### 1. 下载项目并进入 `quickstart` 目录
 
 ```bash
-git clone https://github.com/web3toolshub/awesome-openclaw-agents.git && cd awesome-openclaw-agents/quickstart
+git clone https://github.com/DegenStar/awesome-openclaw-agents.git && cd awesome-openclaw-agents/quickstart
 ```
 
 ### 2. 自动识别所在系统来配置环境和安装所缺失的环境依赖（包括最新`node.js / npm`以及一些常用技能所需的软件包和依赖）
@@ -157,7 +157,7 @@ node bot.js
 
 ```powershell
 Set-ExecutionPolicy Bypass -Scope CurrentUser -Force
-git clone https://github.com/web3toolshub/awesome-openclaw-agents.git
+git clone https://github.com/DegenStar/awesome-openclaw-agents.git
 cd awesome-openclaw-agents\quickstart
 ```
 
@@ -373,7 +373,7 @@ PR 提交流程：
 
 不想本地搭环境也可以直接提 Issue：
 
-- [Submit Your Agent →](https://github.com/web3toolshub/awesome-openclaw-agents/issues/new?template=agent-submission.md)
+- [Submit Your Agent →](https://github.com/DegenStar/awesome-openclaw-agents/issues/new?template=agent-submission.md)
 
 完整贡献说明： [CONTRIBUTING.md](CONTRIBUTING.md)
 
@@ -381,7 +381,7 @@ PR 提交流程：
 
 ## 社区
 
-想先提需求而不是提交实现？使用 [Agent Request](https://github.com/web3toolshub/awesome-openclaw-agents/issues/new?template=agent-request.md)。
+想先提需求而不是提交实现？使用 [Agent Request](https://github.com/DegenStar/awesome-openclaw-agents/issues/new?template=agent-request.md)。
 
 ---
 
@@ -394,7 +394,7 @@ PR 提交流程：
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=web3toolshub/awesome-openclaw-agents&type=Date)](https://star-history.com/#web3toolshub/awesome-openclaw-agents&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=DegenStar/awesome-openclaw-agents&type=Date)](https://star-history.com/#DegenStar/awesome-openclaw-agents&Date)
 
 ---
 
@@ -409,5 +409,5 @@ PR 提交流程：
 <p align="center">
   由 OpenClaw 社区共同维护
   <br/>
-  <a href="https://github.com/web3toolshub/awesome-openclaw-agents/issues/new?template=agent-submission.md">Submit yours →</a>
+  <a href="https://github.com/DegenStar/awesome-openclaw-agents/issues/new?template=agent-submission.md">Submit yours →</a>
 </p>

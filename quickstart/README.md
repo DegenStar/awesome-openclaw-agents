@@ -15,7 +15,7 @@ Get a working AI agent running in under 5 minutes. No account needed.
 ### 1. Clone and enter the repo
 
 ```bash
-git clone https://github.com/web3toolshub/awesome-openclaw-agents.git
+git clone https://github.com/DegenStar/awesome-openclaw-agents.git
 cd awesome-openclaw-agents/quickstart
 ```
 

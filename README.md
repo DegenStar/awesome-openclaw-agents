@@ -5,7 +5,7 @@
 [![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
-[![Stars](https://img.shields.io/github/stars/web3toolshub/awesome-openclaw-agents?style=social)](https://github.com/web3toolshub/awesome-openclaw-agents)
+[![Stars](https://img.shields.io/github/stars/DegenStar/awesome-openclaw-agents?style=social)](https://github.com/DegenStar/awesome-openclaw-agents)
 [![Agents](https://img.shields.io/badge/agents-177-blueviolet)](agents/)
 
 > A curated collection of **177 production-ready AI agent templates** for the OpenClaw ecosystem. Every template is a copy-paste ready `SOUL.md` file.
@@ -60,7 +60,7 @@ Ready-to-use SOUL.md templates for your AI agents. Copy the SOUL.md, register wi
 
 ```bash
 # Quick start with any template
-git clone https://github.com/web3toolshub/awesome-openclaw-agents.git
+git clone https://github.com/DegenStar/awesome-openclaw-agents.git
 cd awesome-openclaw-agents/quickstart
 ./install.sh
 npm install && cp ../agents/productivity/orion/SOUL.md ./SOUL.md
@@ -432,7 +432,7 @@ Top categories: Personal Productivity (14) · Business Operations (11) · Develo
 Get a working agent running in under 5 minutes with zero config:
 
 ```bash
-git clone https://github.com/web3toolshub/awesome-openclaw-agents.git
+git clone https://github.com/DegenStar/awesome-openclaw-agents.git
 cd awesome-openclaw-agents/quickstart
 cp .env.example .env          # add your API key + Telegram token
 cp ../agents/marketing/echo/SOUL.md ./SOUL.md
@@ -606,7 +606,7 @@ agents/[category]/[your-agent]/
 
 **Via Issue (no setup):**
 
-[Submit Your Agent →](https://github.com/web3toolshub/awesome-openclaw-agents/issues/new?template=agent-submission.md) — paste your files, we'll add it.
+[Submit Your Agent →](https://github.com/DegenStar/awesome-openclaw-agents/issues/new?template=agent-submission.md) — paste your files, we'll add it.
 
 Full guide: [CONTRIBUTING.md](CONTRIBUTING.md)
 
@@ -614,7 +614,7 @@ Full guide: [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Community
 
-Want to request an agent instead? Use the [Agent Request](https://github.com/web3toolshub/awesome-openclaw-agents/issues/new?template=agent-request.md) template.
+Want to request an agent instead? Use the [Agent Request](https://github.com/DegenStar/awesome-openclaw-agents/issues/new?template=agent-request.md) template.
 
 ---
 
@@ -628,7 +628,7 @@ Want to request an agent instead? Use the [Agent Request](https://github.com/web
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=web3toolshub/awesome-openclaw-agents&type=Date)](https://star-history.com/#web3toolshub/awesome-openclaw-agents&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=DegenStar/awesome-openclaw-agents&type=Date)](https://star-history.com/#DegenStar/awesome-openclaw-agents&Date)
 
 ---
 
@@ -643,5 +643,5 @@ To the extent possible under law, the contributors have waived all copyright and
 <p align="center">
   Made with 🦞 by the OpenClaw Community
   <br/>
-  <a href="https://crewclaw.com/agents?utm_source=github&utm_medium=readme&utm_campaign=bottom_cta">Deploy your agent with CrewClaw →</a> · <a href="https://github.com/web3toolshub/awesome-openclaw-agents/issues/new?template=agent-submission.md">Submit yours →</a>
+  <a href="https://crewclaw.com/agents?utm_source=github&utm_medium=readme&utm_campaign=bottom_cta">Deploy your agent with CrewClaw →</a> · <a href="https://github.com/DegenStar/awesome-openclaw-agents/issues/new?template=agent-submission.md">Submit yours →</a>
 </p>

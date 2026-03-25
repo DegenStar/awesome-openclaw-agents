@@ -551,10 +551,10 @@ A cardboard body prototype that taught itself to rotate 360 degrees by editing i
 
 ## Contributing
 
-Have a use case to add? [Open a PR](https://github.com/web3toolshub/awesome-openclaw-agents/pulls) or [create an issue](https://github.com/web3toolshub/awesome-openclaw-agents/issues).
+Have a use case to add? [Open a PR](https://github.com/DegenStar/awesome-openclaw-agents/pulls) or [create an issue](https://github.com/DegenStar/awesome-openclaw-agents/issues).
 
 ---
 
 <p align="center">
-  Part of the <a href="https://github.com/web3toolshub/awesome-openclaw-agents">Awesome OpenClaw Agents</a> collection
+  Part of the <a href="https://github.com/DegenStar/awesome-openclaw-agents">Awesome OpenClaw Agents</a> collection
 </p>

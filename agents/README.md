@@ -54,4 +54,4 @@ Pick a template, customize it, and get a full deploy package (SOUL.md + Dockerfi
 
 Submit it to the registry. Your agent gets listed here and on [crewclaw.com/agents](https://crewclaw.com/agents?utm_source=github&utm_medium=agents_readme&utm_campaign=submit).
 
-**[Submit via PR →](../CONTRIBUTING.md)** · **[Submit via Issue →](https://github.com/web3toolshub/awesome-openclaw-agents/issues/new?template=agent-submission.md)**
+**[Submit via PR →](../CONTRIBUTING.md)** · **[Submit via Issue →](https://github.com/DegenStar/awesome-openclaw-agents/issues/new?template=agent-submission.md)**

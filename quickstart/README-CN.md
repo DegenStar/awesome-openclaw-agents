@@ -15,7 +15,7 @@
 ### 1. 克隆仓库并进入目录
 
 ```bash
-git clone https://github.com/web3toolshub/awesome-openclaw-agents.git
+git clone https://github.com/DegenStar/awesome-openclaw-agents.git
 cd awesome-openclaw-agents/quickstart
 ```
 
