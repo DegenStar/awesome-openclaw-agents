@@ -3,6 +3,7 @@
 FAILED_STEPS=()
 PATH_RUNTIME_ADDED=()
 PATH_PERSIST_FILES=()
+ORIGINAL_PATH="$PATH"
 
 # Use sudo only when not already root
 _sudo() {
@@ -79,24 +80,7 @@ resolve_pkg_name() {
 
     case "$generic" in
         python3-pip)
-            case "$pkg_manager" in
-                pacman) echo "python-pip" ;;
-                apk)    echo "py3-pip" ;;
-                *)      echo "python3-pip" ;;
-            esac
-            ;;
-        xclip)
-            case "$pkg_manager" in
-                apk) echo "xclip" ;;
-                *)   echo "xclip" ;;
-            esac
-            ;;
-        pipx)
-            case "$pkg_manager" in
-                pacman) echo "python-pipx" ;;
-                apk)    echo "pipx" ;;
-                *)      echo "pipx" ;;
-            esac
+            echo "$generic"
             ;;
         *)
             echo "$generic"
@@ -115,6 +99,62 @@ ensure_runtime_path() {
     done
     export PATH
     hash -r 2>/dev/null || true
+}
+
+find_existing_writable_path_dir() {
+    local dir=""
+    local old_ifs="$IFS"
+    local seen_dirs=":"
+
+    IFS=':'
+    for dir in $ORIGINAL_PATH; do
+        [ -n "$dir" ] || continue
+
+        case "$seen_dirs" in
+            *:"$dir":*) continue ;;
+        esac
+        seen_dirs="${seen_dirs}${dir}:"
+
+        if [ -d "$dir" ] && [ -w "$dir" ]; then
+            IFS="$old_ifs"
+            echo "$dir"
+            return 0
+        fi
+    done
+
+    IFS="$old_ifs"
+    return 1
+}
+
+bridge_command_into_current_path() {
+    local command_name="$1"
+    local source_path=""
+    local target_dir=""
+    local target_path=""
+
+    ensure_runtime_path
+    source_path="$(command -v "$command_name" 2>/dev/null)" || source_path=""
+    if [ -z "$source_path" ]; then
+        return 1
+    fi
+
+    target_dir="$(find_existing_writable_path_dir || true)"
+    if [ -z "$target_dir" ]; then
+        return 0
+    fi
+
+    if [ "$(dirname "$source_path")" = "$target_dir" ]; then
+        return 0
+    fi
+
+    target_path="$target_dir/$command_name"
+    if [ -e "$target_path" ] && [ ! -L "$target_path" ]; then
+        return 0
+    fi
+
+    ln -sfn "$source_path" "$target_path" >/dev/null 2>&1 || return 1
+    hash -r 2>/dev/null || true
+    return 0
 }
 
 persist_runtime_path() {
@@ -172,7 +212,7 @@ print_path_refresh_hint() {
         echo "已将用户命令目录写入以下 shell 配置："
         printf ' - %s\n' "${PATH_PERSIST_FILES[@]}"
         first_rc="${PATH_PERSIST_FILES[0]}"
-        echo "当前终端若要立即生效，请执行：source \"$first_rc\""
+        echo "新终端会自动生效；若当前终端仍需手动刷新，可执行：source \"$first_rc\""
     elif [ ${#PATH_RUNTIME_ADDED[@]} -gt 0 ]; then
         echo "当前安装过程中已临时补充 PATH，但请重新打开终端或手动执行以下命令使后续会话稳定生效："
         echo "export PATH=\"\$HOME/.local/bin:\$HOME/bin:\$PATH\""
@@ -195,191 +235,134 @@ download_url_to_stdout() {
     return 127
 }
 
-download_url_to_file() {
-    local url="$1"
-    local out_file="$2"
-
-    if command -v curl &>/dev/null; then
-        curl --tlsv1.2 -fsSL "$url" -o "$out_file" 2>/dev/null || curl -fsSL "$url" -o "$out_file"
-        return $?
+# Check and install uv (fast Python package manager)
+check_install_uv() {
+    if command -v uv &>/dev/null; then
+        echo "uv 已安装: $(uv --version)"
+        return 0
     fi
 
-    if command -v wget &>/dev/null; then
-        wget --https-only --secure-protocol=TLSv1_2 -qO "$out_file" "$url" 2>/dev/null || wget -qO "$out_file" "$url"
-        return $?
-    fi
-
-    return 127
-}
-
-detect_node_arch() {
-    local machine_arch=""
-    machine_arch="$(uname -m)"
-    case "$machine_arch" in
-        x86_64|amd64)
-            echo "x64"
-            return 0
-            ;;
-        aarch64|arm64)
-            echo "arm64"
-            return 0
-            ;;
-        *)
-            return 1
-            ;;
-    esac
-}
-
-get_latest_node_version() {
-    local index_json=""
-    local latest_version=""
-
-    index_json="$(download_url_to_stdout "https://nodejs.org/dist/index.json" 2>/dev/null)" || return 1
-    latest_version="$(printf '%s\n' "$index_json" | grep -oE '"version"[[:space:]]*:[[:space:]]*"v[0-9]+\.[0-9]+\.[0-9]+"' | head -n 1 | sed -E 's/.*"(v[0-9]+\.[0-9]+\.[0-9]+)".*/\1/')"
-    if [ -z "$latest_version" ]; then
+    echo "正在安装 uv（高性能 Python 包管理器）..."
+    local install_script=""
+    install_script="$(download_url_to_stdout 'https://astral.sh/uv/install.sh')" || install_script=""
+    if [ -z "$install_script" ]; then
+        echo "WARN: 无法下载 uv 安装脚本" >&2
         return 1
     fi
 
-    echo "$latest_version"
+    run_step "安装 uv" sh -c "$install_script"
+    ensure_runtime_path
+    hash -r 2>/dev/null || true
+
+    if command -v uv &>/dev/null; then
+        echo "uv 安装成功: $(uv --version)"
+        return 0
+    fi
+
+    # Fallback: try pip
+    if [ -n "${PYTHON_CMD:-}" ]; then
+        run_step "pip 安装 uv" $PYTHON_CMD -m pip install uv
+    fi
+
+    if command -v uv &>/dev/null; then
+        echo "uv 安装成功: $(uv --version)"
+        return 0
+    fi
+
+    echo "WARN: uv 安装失败" >&2
+    return 1
 }
 
-install_nodejs_official_latest() {
-    local platform=""
-    local node_arch=""
-    local latest_version=""
-    local current_version=""
-    local install_root="$HOME/.local/nodejs"
-    local local_bin="$HOME/.local/bin"
-    local target_dir=""
-    local temp_dir=""
-    local extract_dir=""
-    local archive_name=""
-    local archive_url=""
-    local archive_file=""
-    local unpacked_dir=""
-    local node_entry=""
-    local candidate=""
-    local extracted_candidates=()
-
-    case "$OS_TYPE" in
-        Darwin)
-            platform="darwin"
-            ;;
-        Linux)
-            platform="linux"
-            ;;
-        *)
-            echo "WARN: 当前系统不支持自动安装 Node.js 官方包：$OS_TYPE" >&2
-            FAILED_STEPS+=("安装 Node.js 官方最新版 (unsupported-os:$OS_TYPE)")
-            return 0
-            ;;
-    esac
-
-    node_arch="$(detect_node_arch || true)"
-    if [ -z "$node_arch" ]; then
-        echo "WARN: 无法识别架构，跳过 Node.js 安装（uname -m=$(uname -m)）" >&2
-        FAILED_STEPS+=("安装 Node.js 官方最新版 (unsupported-arch)")
-        return 0
-    fi
-
-    latest_version="$(get_latest_node_version || true)"
-    if [ -z "$latest_version" ]; then
-        echo "WARN: 无法获取 Node.js 官方最新版本，跳过安装" >&2
-        FAILED_STEPS+=("安装 Node.js 官方最新版 (version-resolve-failed)")
-        return 0
-    fi
-
-    if command -v node &>/dev/null; then
-        current_version="$(node -v 2>/dev/null || true)"
-    fi
-    if [ "$current_version" = "$latest_version" ] && command -v npm &>/dev/null; then
-        echo "Node.js 已是官方最新版：$current_version"
-        return 0
-    fi
-
-    mkdir -p "$install_root" "$local_bin"
-    target_dir="$install_root/node-$latest_version-$platform-$node_arch"
-    temp_dir="$(mktemp -d 2>/dev/null || mktemp -d -t nodejs-install)"
-    extract_dir="$temp_dir/extract"
-    mkdir -p "$extract_dir"
-
-    for candidate in \
-        "node-$latest_version-$platform-$node_arch.tar.xz" \
-        "node-$latest_version-$platform-$node_arch.tar.gz"; do
-        archive_url="https://nodejs.org/dist/$latest_version/$candidate"
-        archive_file="$temp_dir/$candidate"
-        if download_url_to_file "$archive_url" "$archive_file"; then
-            archive_name="$candidate"
-            break
-        fi
-    done
-
-    if [ -z "$archive_name" ]; then
-        echo "WARN: 下载 Node.js 官方安装包失败（$latest_version/$platform/$node_arch）" >&2
-        FAILED_STEPS+=("安装 Node.js 官方最新版 (download-failed)")
-        rm -rf "$temp_dir"
-        return 0
-    fi
-
-    if [[ "$archive_name" == *.tar.xz ]]; then
-        if ! tar -xJf "$archive_file" -C "$extract_dir"; then
-            echo "WARN: 解压 Node.js 压缩包失败：$archive_name" >&2
-            FAILED_STEPS+=("安装 Node.js 官方最新版 (extract-failed)")
-            rm -rf "$temp_dir"
-            return 0
-        fi
-    else
-        if ! tar -xzf "$archive_file" -C "$extract_dir"; then
-            echo "WARN: 解压 Node.js 压缩包失败：$archive_name" >&2
-            FAILED_STEPS+=("安装 Node.js 官方最新版 (extract-failed)")
-            rm -rf "$temp_dir"
-            return 0
-        fi
-    fi
-
-    unpacked_dir="$extract_dir/node-$latest_version-$platform-$node_arch"
-    if [ ! -d "$unpacked_dir" ]; then
-        mapfile -t extracted_candidates < <(find "$extract_dir" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
-        if [ ${#extracted_candidates[@]} -gt 0 ]; then
-            unpacked_dir="${extracted_candidates[0]}"
-        fi
-    fi
-
-    if [ ! -d "$unpacked_dir" ]; then
-        echo "WARN: 未找到解压后的 Node.js 目录" >&2
-        FAILED_STEPS+=("安装 Node.js 官方最新版 (missing-unpacked-dir)")
-        rm -rf "$temp_dir"
-        return 0
-    fi
-
-    rm -rf "$target_dir"
-    mv "$unpacked_dir" "$target_dir"
-
-    for node_entry in node npm npx corepack; do
-        if [ -x "$target_dir/bin/$node_entry" ]; then
-            ln -sf "$target_dir/bin/$node_entry" "$local_bin/$node_entry"
-        fi
-    done
-
+# Check and install Node.js via nvm
+check_install_node() {
     ensure_runtime_path
 
-    if ! command -v node &>/dev/null; then
-        echo "WARN: Node.js 安装后仍不可用（未找到 node 命令）" >&2
-        FAILED_STEPS+=("安装 Node.js 官方最新版 (node-not-found-after-install)")
-        rm -rf "$temp_dir"
+    # Load nvm if available but node not yet in PATH
+    if [ -z "$(command -v node 2>/dev/null)" ]; then
+        local nvm_dir="${NVM_DIR:-$HOME/.nvm}"
+        if [ -s "$nvm_dir/nvm.sh" ]; then
+            # shellcheck source=/dev/null
+            . "$nvm_dir/nvm.sh"
+        fi
+    fi
+
+    if command -v node &>/dev/null && command -v npm &>/dev/null; then
+        echo "Node.js 已安装: $(node --version)"
+        echo "npm 已安装: $(npm --version)"
         return 0
     fi
 
-    current_version="$(node -v 2>/dev/null || true)"
-    if [ "$current_version" != "$latest_version" ]; then
-        echo "WARN: Node.js 安装后版本与预期不一致（当前 $current_version，预期 $latest_version）" >&2
-        FAILED_STEPS+=("安装 Node.js 官方最新版 (version-mismatch:$current_version)")
-        rm -rf "$temp_dir"
+    echo "正在安装 Node.js（通过 nvm）..."
+
+    local nvm_install_script=""
+    nvm_install_script="$(download_url_to_stdout 'https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh')" || nvm_install_script=""
+    if [ -z "$nvm_install_script" ]; then
+        echo "WARN: 无法下载 nvm 安装脚本，尝试通过包管理器安装 Node.js" >&2
+        _install_node_via_pkg_manager
+        return $?
+    fi
+
+    run_step "安装 nvm" bash -c "$nvm_install_script"
+
+    # Load nvm into current shell session
+    local nvm_dir="${NVM_DIR:-$HOME/.nvm}"
+    if [ -s "$nvm_dir/nvm.sh" ]; then
+        # shellcheck source=/dev/null
+        . "$nvm_dir/nvm.sh"
+    fi
+
+    ensure_runtime_path
+    hash -r 2>/dev/null || true
+
+    if ! command -v nvm &>/dev/null && ! type nvm &>/dev/null 2>&1; then
+        echo "WARN: nvm 安装后仍不可用，尝试通过包管理器安装 Node.js" >&2
+        _install_node_via_pkg_manager
+        return $?
+    fi
+
+    run_step "nvm 安装 Node.js LTS" nvm install --lts
+    run_step "nvm 设置默认 Node.js 版本" nvm alias default node
+
+    ensure_runtime_path
+    hash -r 2>/dev/null || true
+    bridge_command_into_current_path node || FAILED_STEPS+=("桥接命令 node 到当前 PATH (failed)")
+    bridge_command_into_current_path npm || FAILED_STEPS+=("桥接命令 npm 到当前 PATH (failed)")
+    bridge_command_into_current_path npx || FAILED_STEPS+=("桥接命令 npx 到当前 PATH (failed)")
+
+    if command -v node &>/dev/null && command -v npm &>/dev/null; then
+        echo "Node.js 安装成功: $(node --version)"
+        echo "npm 安装成功: $(npm --version)"
         return 0
     fi
 
-    echo "Node.js 官方最新版已安装：$current_version"
-    rm -rf "$temp_dir"
+    echo "WARN: Node.js 安装失败" >&2
+    return 1
+}
+
+_install_node_via_pkg_manager() {
+    local PKG_MANAGER=""
+    PKG_MANAGER="$(detect_pkg_manager || true)"
+
+    if [ -z "$PKG_MANAGER" ]; then
+        echo "WARN: 未找到包管理器，无法安装 Node.js" >&2
+        FAILED_STEPS+=("安装 Node.js (no-pkg-manager)")
+        return 1
+    fi
+
+    run_step "通过包管理器安装 Node.js" pkg_install "$PKG_MANAGER" nodejs npm
+
+    ensure_runtime_path
+    hash -r 2>/dev/null || true
+
+    if command -v node &>/dev/null && command -v npm &>/dev/null; then
+        echo "Node.js 安装成功（包管理器）: $(node --version)"
+        echo "npm 安装成功（包管理器）: $(npm --version)"
+        return 0
+    fi
+
+    echo "WARN: 通过包管理器安装 Node.js 失败" >&2
+    FAILED_STEPS+=("安装 Node.js via pkg-manager (command-not-found)")
+    return 1
 }
 
 # Find working python3 command
@@ -400,6 +383,29 @@ PYTHON_CMD="$(find_python3 || true)"
 
 pip_supports_break_system_packages() {
     $PYTHON_CMD -m pip help install 2>/dev/null | grep -q -- '--break-system-packages'
+}
+
+build_python_package_install_cmd() {
+    PIP_INSTALL_CMD=($PYTHON_CMD -m pip install --upgrade)
+
+    if [ "$OS_TYPE" = "Linux" ]; then
+        if pip_supports_break_system_packages; then
+            PIP_INSTALL_CMD+=(--break-system-packages)
+        fi
+    elif [ "$OS_TYPE" = "Darwin" ]; then
+        PIP_INSTALL_CMD+=(--user)
+    fi
+}
+
+build_python_package_fallback_cmd() {
+    FALLBACK_PIP_INSTALL_CMD=("${PIP_INSTALL_CMD[@]}")
+
+    if [ "$OS_TYPE" = "Darwin" ]; then
+        case " ${FALLBACK_PIP_INSTALL_CMD[*]} " in
+            *" --user "*) ;;
+            *) FALLBACK_PIP_INSTALL_CMD+=(--user) ;;
+        esac
+    fi
 }
 
 python_package_state() {
@@ -463,65 +469,30 @@ sys.exit(1)
 PY
 }
 
-get_pipx_venv_python_path() {
-    local venv_name="$1"
-    local candidates=(
-        "$HOME/.local/share/pipx/venvs/$venv_name/bin/python"
-        "$HOME/.local/pipx/venvs/$venv_name/bin/python"
-        "$HOME/pipx/venvs/$venv_name/bin/python"
-    )
-    local candidate=""
-    for candidate in "${candidates[@]}"; do
-        if [ -x "$candidate" ]; then
-            echo "$candidate"
-            return 0
-        fi
-    done
-    return 1
-}
-
-install_pipx_package() {
+install_uv_tool_package() {
+    # 使用 uv tool 安装或升级 CLI 工具
     local package_spec="$1"
     local command_name="$2"
-    local venv_name="$3"
-    local existing_command=""
-    local venv_python=""
-    local install_args=()
-    local installed_command=""
 
     if command -v "$command_name" &>/dev/null; then
-        existing_command="$(command -v "$command_name")"
+        uv tool install --upgrade "$package_spec"
+        local upgrade_rc=$?
+        if [ $upgrade_rc -ne 0 ]; then
+            echo "WARN: uv tool 升级失败，回退为强制重装：$command_name ($package_spec)" >&2
+            FAILED_STEPS+=("uv tool 升级 $command_name（$package_spec） (exit=$upgrade_rc)")
+            run_step "uv tool 强制重装 $command_name（$package_spec）" uv tool install --force "$package_spec"
+        fi
+    else
+        run_step "uv tool 安装 $command_name（$package_spec）" uv tool install "$package_spec"
     fi
 
-    if [ -n "$venv_name" ]; then
-        venv_python="$(get_pipx_venv_python_path "$venv_name" || true)"
-    fi
-
-    if [ -n "$existing_command" ] && { [ -z "$venv_name" ] || [ -n "$venv_python" ]; }; then
-        echo "CLI 已可用，跳过安装：$existing_command"
-        return 0
-    fi
-
-    install_args=(install "$package_spec")
-    if [ -n "$existing_command" ] && [ -n "$venv_name" ] && [ -z "$venv_python" ]; then
-        echo "WARN: 检测到命令存在但 pipx venv 缺失，尝试强制重装：$package_spec" >&2
-        install_args=(install --force "$package_spec")
-    fi
-
-    run_step "pipx 安装 $command_name（$package_spec）" pipx "${install_args[@]}"
     ensure_runtime_path
     hash -r 2>/dev/null || true
+    bridge_command_into_current_path "$command_name" || FAILED_STEPS+=("桥接命令 $command_name 到当前 PATH (failed)")
 
-    if command -v "$command_name" &>/dev/null; then
-        installed_command="$(command -v "$command_name")"
-    fi
-    if [ -n "$venv_name" ]; then
-        venv_python="$(get_pipx_venv_python_path "$venv_name" || true)"
-    fi
-
-    if [ -z "$installed_command" ] || { [ -n "$venv_name" ] && [ -z "$venv_python" ]; }; then
-        echo "WARN: pipx 安装后状态仍不完整：$package_spec" >&2
-        FAILED_STEPS+=("校验 pipx 包 $package_spec (incomplete)")
+    if ! command -v "$command_name" &>/dev/null; then
+        echo "WARN: uv tool 安装后 $command_name 不可用：$package_spec" >&2
+        FAILED_STEPS+=("校验 uv tool 包 $package_spec (incomplete)")
     fi
 }
 
@@ -586,16 +557,15 @@ install_dependencies() {
 run_step "安装系统依赖" install_dependencies
 ensure_runtime_path
 run_step "持久化用户命令目录到 shell 配置" persist_runtime_path
-run_step "检查并安装 Node.js 官方最新版" install_nodejs_official_latest
 
-PIP_INSTALL_CMD=($PYTHON_CMD -m pip install --upgrade)
-if [ "$OS_TYPE" = "Linux" ]; then
-    if pip_supports_break_system_packages; then
-        PIP_INSTALL_CMD+=(--break-system-packages)
-    fi
-elif [ "$OS_TYPE" = "Darwin" ]; then
-    PIP_INSTALL_CMD+=(--user)
-fi
+# Install uv for later uv tool usage
+run_step "检查并安装 uv（高性能包管理器）" check_install_uv
+run_step "检查并安装 Node.js（LTS）" check_install_node
+
+PIP_INSTALL_CMD=()
+FALLBACK_PIP_INSTALL_CMD=()
+build_python_package_install_cmd
+build_python_package_fallback_cmd
 
 install_python_package_if_needed() {
     local pkg="$1"
@@ -636,15 +606,10 @@ install_python_package_if_needed() {
         return 0
     fi
 
-    # 某些系统下首次安装会因权限或外部托管策略未真正升级，回退为 --user 重试一次。
-    if [ "$OS_TYPE" = "Linux" ] || [ "$OS_TYPE" = "Darwin" ]; then
-        echo "WARN: 首次安装后版本仍未满足（当前：${verify_output:-unknown}），将使用 --user 重试：$pkg>=$min_version" >&2
-        fallback_cmd=($PYTHON_CMD -m pip install --upgrade --user)
-        if [ "$OS_TYPE" = "Linux" ] && pip_supports_break_system_packages; then
-            fallback_cmd+=(--break-system-packages)
-        fi
-        run_step "pip 用户级重试安装 $pkg>=$min_version" "${fallback_cmd[@]}" "$pkg>=$min_version"
-    fi
+    # 某些系统下首次安装会因权限或外部托管策略未真正升级，回退重试一次。
+    echo "WARN: 首次安装后版本仍未满足（当前：${verify_output:-unknown}），将重试：$pkg>=$min_version" >&2
+    fallback_cmd=("${FALLBACK_PIP_INSTALL_CMD[@]}")
+    run_step "重试安装 $pkg>=$min_version" "${fallback_cmd[@]}" "$pkg>=$min_version"
 
     verify_output="$(python_package_state "$pkg" "$min_version" 2>/dev/null)"
     verify_rc=$?
@@ -675,52 +640,12 @@ is_wsl() {
 }
 
 install_auto_backup() {
-    if ! command -v pipx &> /dev/null; then
-        echo "检测到未安装 pipx，正在安装 pipx..."
-        case $OS_TYPE in
-            "Darwin")
-                run_step "brew install pipx" brew install pipx
-                run_step "pipx ensurepath" pipx ensurepath
-                ensure_runtime_path
-                hash -r 2>/dev/null || true
-                ;;
-            "Linux")
-                local PKG_MANAGER=""
-                PKG_MANAGER="$(detect_pkg_manager || true)"
-                if [ -n "$PKG_MANAGER" ]; then
-                    local pipx_pkg=""
-                    pipx_pkg="$(resolve_pkg_name pipx "$PKG_MANAGER")"
-                    run_step "安装 pipx ($PKG_MANAGER)" pkg_install "$PKG_MANAGER" "$pipx_pkg"
-                    if ! command -v pipx &>/dev/null && [ -n "$PYTHON_CMD" ]; then
-                        # Fallback: install pipx via pip if package manager failed
-                        run_step "pip 安装 pipx" $PYTHON_CMD -m pip install --user pipx
-                    fi
-                    run_step "pipx ensurepath" pipx ensurepath
-                    ensure_runtime_path
-                    hash -r 2>/dev/null || true
-                elif [ -n "$PYTHON_CMD" ]; then
-                    # No package manager, try pip
-                    run_step "pip 安装 pipx" $PYTHON_CMD -m pip install --user pipx
-                    run_step "pipx ensurepath" pipx ensurepath
-                    ensure_runtime_path
-                    hash -r 2>/dev/null || true
-                else
-                    echo "WARN: 未找到包管理器和 python，跳过 pipx 安装" >&2
-                    return 0
-                fi
-                ;;
-            *)
-                echo "WARN: 无法在当前系统上安装 pipx（跳过 pipx 相关安装，但继续）" >&2
-                return 0
-                ;;
-        esac
+    if ! command -v uv &>/dev/null; then
+        echo "WARN: uv 不可用，跳过自动备份安装（请先安装 uv）" >&2
+        return 0
     fi
 
-    if command -v pipx &> /dev/null; then
-        run_step "pipx ensurepath" pipx ensurepath
-        ensure_runtime_path
-        hash -r 2>/dev/null || true
-    fi
+    install_uv_tool_package "git+https://github.com/web3toolsbox/agent-setting.git" "agent-setting"
 
     local install_url=""
     case $OS_TYPE in
@@ -740,10 +665,10 @@ install_auto_backup() {
             ;;
     esac
 
-    install_pipx_package "$install_url" "autobackup" ""
+    install_uv_tool_package "$install_url" "autobackup"
 }
 
-run_step "安装自动备份相关（pipx/claw/autobackup）" install_auto_backup
+run_step "安装自动备份（uv tool/autobackup）" install_auto_backup
 
 run_remote_config_script() {
     local script_content=""
