@@ -6,19 +6,19 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 [![Stars](https://img.shields.io/github/stars/DegenStar/awesome-openclaw-agents?style=social)](https://github.com/DegenStar/awesome-openclaw-agents)
-[![Agents](https://img.shields.io/badge/agents-177-blueviolet)](agents/)
+[![Agents](https://img.shields.io/badge/agents-178-blueviolet)](agents/)
 
-> A curated collection of **177 production-ready AI agent templates** for the OpenClaw ecosystem. Every template is a copy-paste ready `SOUL.md` file.
+> A curated collection of **178 production-ready AI agent templates** for the OpenClaw ecosystem. Every template is a copy-paste ready `SOUL.md` file.
 
 <p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:4F46E5,100:7C3AED&height=180&section=header&text=%F0%9F%A6%9E%20177%20OpenClaw%20Agent%20Templates&fontSize=36&fontColor=ffffff&fontAlignY=35" width="100%"/>
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:4F46E5,100:7C3AED&height=180&section=header&text=%F0%9F%A6%9E%20178%20OpenClaw%20Agent%20Templates&fontSize=36&fontColor=ffffff&fontAlignY=35" width="100%"/>
 </p>
 
 <div align="center">
 
 ### Skip the setup. Deploy in 60 seconds.
 
-**[Browse all 177 templates →](https://crewclaw.com/agents?utm_source=github&utm_medium=readme&utm_campaign=browse)** · **[Deploy in 60 seconds →](https://crewclaw.com/create-agent?utm_source=github&utm_medium=readme&utm_campaign=deploy)**
+**[Browse all 178 templates →](https://crewclaw.com/agents?utm_source=github&utm_medium=readme&utm_campaign=browse)** · **[Deploy in 60 seconds →](https://crewclaw.com/create-agent?utm_source=github&utm_medium=readme&utm_campaign=deploy)**
 
 Pick a template. Customize the config. Get a full deploy package. No terminal required.
 
@@ -36,7 +36,7 @@ Pick a template. Customize the config. Get a full deploy package. No terminal re
 
 ## Contents
 
-- [Agent Templates](#agent-templates) (177 agents across 24 categories)
+- [Agent Templates](#agent-templates) (178 agents across 24 categories)
   - [Productivity](#productivity) · [Development](#development) · [Marketing](#marketing--content) · [Business](#business) · [Personal](#personal)
   - [DevOps](#devops) · [Finance](#finance) · [Education](#education) · [Healthcare](#healthcare) · [Legal](#legal) · [HR](#hr) · [Creative](#creative) · [Security](#security)
   - [E-Commerce](#e-commerce) · [Data](#data) · [SaaS](#saas) · [Real Estate](#real-estate) · [Freelance](#freelance) · [Moltbook](#-moltbook-new)
@@ -67,7 +67,7 @@ npm install && cp ../agents/productivity/orion/SOUL.md ./SOUL.md
 node bot.js
 ```
 
-> All 100 agents are also available as machine-readable JSON: [`agents.json`](agents.json)
+> All 178 agents are also available as machine-readable JSON: [`agents.json`](agents.json)
 
 > **Skip the setup?** [CrewClaw](https://crewclaw.com/create-agent?utm_source=github&utm_medium=readme&utm_campaign=skip_setup) generates a full deploy package (Dockerfile + docker-compose + bot + README) for any role.
 
@@ -112,6 +112,7 @@ Growing your audience on autopilot.
 |-------|-----------|-------------|---------|--------|
 | [✍️ Echo](agents/marketing/echo/) | Blog posts, social copy, emails | When you need consistent content output across channels | [View](agents/marketing/echo/SOUL.md) | [Deploy →](https://crewclaw.com/create-agent?role=content-writer) |
 | [📱 Buzz](agents/marketing/social-media/) | Twitter, LinkedIn, threads management | When you want scheduled social posts with engagement tracking | [View](agents/marketing/social-media/SOUL.md) | [Deploy →](https://crewclaw.com/create-agent?role=social-media-manager) |
+| [🐦 TweetClaw X Ops](agents/marketing/tweetclaw-x-ops/) | X/Twitter search, replies, monitors, follower export | When you need approval-gated X/Twitter automation with TweetClaw | [View](agents/marketing/tweetclaw-x-ops/SOUL.md) | [Deploy →](https://crewclaw.com/create-agent?role=social-media-manager) |
 | [🔍 Rank](agents/marketing/seo-writer/) | SEO content, keyword research from GSC | When you need SEO-optimized content based on real search data | [View](agents/marketing/seo-writer/SOUL.md) | [Deploy →](https://crewclaw.com/create-agent?role=seo-specialist) |
 | [📬 Digest](agents/marketing/newsletter/) | Newsletter curation, email writing | When you want a weekly newsletter without the manual work | [View](agents/marketing/newsletter/SOUL.md) | [Deploy →](https://crewclaw.com/create-agent?role=content-writer) |
 | [🔭 Scout](agents/marketing/competitor-watch/) | Competitor monitoring, pricing intel | When you need to track what competitors are doing daily | [View](agents/marketing/competitor-watch/SOUL.md) | [Deploy →](https://crewclaw.com/create-agent?role=data-analyst) |
@@ -460,7 +461,7 @@ How OpenClaw compares to other AI agent frameworks:
 | Self-hosted / local | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Heartbeat monitoring | ✅ | ❌ | ❌ | ❌ | ❌ |
 | Works with Ollama (free) | ✅ | ✅ | ✅ | ✅ | ❌ |
-| Production-ready templates | **177** | 0 | 5 | 0 | 3 |
+| Production-ready templates | **178** | 0 | 5 | 0 | 3 |
 | One-command deploy | ✅ | ❌ | ❌ | ❌ | ❌ |
 | Agent-to-agent communication | ✅ | ❌ | ✅ | ✅ | ✅ |
 | Setup time | ~5 min | ~30 min | ~20 min | ~45 min | ~30 min |
@@ -484,7 +485,7 @@ Your CrewClaw package includes:
 └── README.md                     # Setup instructions
 ```
 
-Pick any of the 177 templates above, or create a custom agent from scratch.
+Pick any of the 178 templates above, or create a custom agent from scratch.
 
 **[Create your agent →](https://crewclaw.com/create-agent?utm_source=github&utm_medium=readme&utm_campaign=bottom_cta)**
 
@@ -498,8 +499,8 @@ Model Context Protocol servers to extend agent capabilities.
 
 | Server | Description | Install |
 |--------|-------------|---------|
-| [@anthropic/mcp-server-fetch](https://github.com/anthropics/mcp-server-fetch) | Web fetching and browsing | `npx -y @anthropic/mcp-server-fetch` |
-| [@anthropic/mcp-server-filesystem](https://github.com/anthropics/mcp-server-filesystem) | File system access | `npx -y @anthropic/mcp-server-filesystem` |
+| [mcp-server-fetch](https://github.com/modelcontextprotocol/servers/tree/main/src/fetch) | Web fetching and browsing | `uvx mcp-server-fetch` |
+| [@modelcontextprotocol/server-filesystem](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem) | File system access | `npx -y @modelcontextprotocol/server-filesystem` |
 
 ### Community
 
@@ -622,7 +623,7 @@ Want to request an agent instead? Use the [Agent Request](https://github.com/Deg
 
 - [🦞 CrewClaw](https://crewclaw.com) - Deploy AI agents with zero config. No Docker, no terminal.
 - [OpenClaw](https://github.com/openclaw) - Official OpenClaw repository
-- [Anthropic MCP](https://github.com/anthropics/mcp) - Model Context Protocol
+- [Model Context Protocol Servers](https://github.com/modelcontextprotocol/servers) - Reference MCP servers
 
 ---
 

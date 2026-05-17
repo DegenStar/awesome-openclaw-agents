@@ -1,6 +1,6 @@
 # Agent Templates
 
-177 production-ready `SOUL.md` templates across 24 categories.
+178 production-ready `SOUL.md` templates across 24 categories.
 
 ## Quick Start
 
@@ -42,7 +42,7 @@ openclaw start
 
 ## Skip the setup. Deploy in 60 seconds.
 
-**[Browse all 177 templates with one-click deploy](https://crewclaw.com/agents?utm_source=github&utm_medium=agents_readme&utm_campaign=browse)**
+**[Browse all 178 templates with one-click deploy](https://crewclaw.com/agents?utm_source=github&utm_medium=agents_readme&utm_campaign=browse)**
 
 Pick a template, customize it, and get a full deploy package (SOUL.md + Dockerfile + bot scripts + setup guide) in 60 seconds. No terminal required.
 

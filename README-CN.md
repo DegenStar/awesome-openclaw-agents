@@ -6,19 +6,19 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 [![Stars](https://img.shields.io/github/stars/DegenStar/awesome-openclaw-agents?style=social)](https://github.com/DegenStar/awesome-openclaw-agents)
-[![Agents](https://img.shields.io/badge/agents-177-blueviolet)](agents/)
+[![Agents](https://img.shields.io/badge/agents-178-blueviolet)](agents/)
 
-> 一个为 OpenClaw 生态整理的 **177 个可直接投入生产的 AI Agent 模板合集**。每个模板都可直接复制为 `SOUL.md` 使用。
+> 一个为 OpenClaw 生态整理的 **178 个可直接投入生产的 AI Agent 模板合集**。每个模板都可直接复制为 `SOUL.md` 使用。
 
 <p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:4F46E5,100:7C3AED&height=180&section=header&text=%F0%9F%A6%9E%20177%20OpenClaw%20Agent%20Templates&fontSize=36&fontColor=ffffff&fontAlignY=35" width="100%"/>
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:4F46E5,100:7C3AED&height=180&section=header&text=%F0%9F%A6%9E%20178%20OpenClaw%20Agent%20Templates&fontSize=36&fontColor=ffffff&fontAlignY=35" width="100%"/>
 </p>
 
 <div align="center">
 
 ### 跳过繁琐配置，60 秒完成部署
 
-**[浏览全部 177 个模板 →](README.md#agent-templates)**
+**[浏览全部 178 个模板 →](README.md#agent-templates)**
 
 选一个模板，复制 `SOUL.md`，修改配置并启动你的 Agent。
 
@@ -57,7 +57,7 @@
 
 ## 项目概览
 
-- 模板总数：**177**
+- 模板总数：**178**
 - 分类数量：**24**
 - 已验证使用场景：**132**
 - 模板格式：`SOUL.md`
@@ -264,7 +264,7 @@ OpenClaw 与常见 Agent 框架对比：
 | 可自托管/本地运行 | ✅ | ✅ | ✅ | ✅ | ✅ |
 | 心跳监控机制 | ✅ | ❌ | ❌ | ❌ | ❌ |
 | 支持 Ollama（免费） | ✅ | ✅ | ✅ | ✅ | ❌ |
-| 生产可用模板数量 | **177** | 0 | 5 | 0 | 3 |
+| 生产可用模板数量 | **178** | 0 | 5 | 0 | 3 |
 | 一条命令部署 | ✅ | ❌ | ❌ | ❌ | ❌ |
 | Agent 与 Agent 通信 | ✅ | ❌ | ✅ | ✅ | ✅ |
 | 初始搭建时间 | ~5 分钟 | ~30 分钟 | ~20 分钟 | ~45 分钟 | ~30 分钟 |
@@ -281,8 +281,8 @@ OpenClaw 与常见 Agent 框架对比：
 
 | Server | 描述 | 安装 |
 |--------|------|------|
-| [@anthropic/mcp-server-fetch](https://github.com/anthropics/mcp-server-fetch) | 网页抓取与浏览 | `npx -y @anthropic/mcp-server-fetch` |
-| [@anthropic/mcp-server-filesystem](https://github.com/anthropics/mcp-server-filesystem) | 文件系统访问 | `npx -y @anthropic/mcp-server-filesystem` |
+| [mcp-server-fetch](https://github.com/modelcontextprotocol/servers/tree/main/src/fetch) | 网页抓取与浏览 | `uvx mcp-server-fetch` |
+| [@modelcontextprotocol/server-filesystem](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem) | 文件系统访问 | `npx -y @modelcontextprotocol/server-filesystem` |
 
 ### 社区
 
@@ -388,7 +388,7 @@ PR 提交流程：
 ## 相关项目
 
 - [OpenClaw](https://github.com/openclaw)
-- [Anthropic MCP](https://github.com/anthropics/mcp)
+- [Model Context Protocol Servers](https://github.com/modelcontextprotocol/servers)
 
 ---
 
