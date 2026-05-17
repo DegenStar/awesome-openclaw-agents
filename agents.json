@@ -1,5 +1,5 @@
 {
-  "total": 174,
+  "total": 178,
   "agents": [
     {
       "id": "churn-predictor",
@@ -607,6 +607,14 @@
       "name": "social-media",
       "role": "",
       "path": "agents/marketing/social-media/SOUL.md",
+      "deploy": "https://crewclaw.com/create-agent"
+    },
+    {
+      "id": "tweetclaw-x-ops",
+      "category": "marketing",
+      "name": "TweetClaw X Ops",
+      "role": "X/Twitter Research and Automation Agent",
+      "path": "agents/marketing/tweetclaw-x-ops/SOUL.md",
       "deploy": "https://crewclaw.com/create-agent"
     },
     {
